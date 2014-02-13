@@ -1,4 +1,4 @@
 Raging-chair
 ============
 
-Platform game in love2d (LUA)
+Platform game in LÖVE
