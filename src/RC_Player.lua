@@ -14,6 +14,10 @@ function newPlayer(x, y)
   new.img_jump = love.graphics.newImage("img/character-jump.png")
   new.look_direction = 'right'
   new.move_action = 'stand'
+  new.jump_action = 'none'
+  new.in_jump = false
+  new.jump_start_y = y
+  new.jump_factor = 2
 
   return setmetatable(new, RC_Player)
 end
@@ -27,29 +31,61 @@ function RC_Player:move(x, y)
     self.look_direction = 'left'
   end
 
-  self.x = self.x + x
-  self.y = self.y + y
+  local jump_factor = self.jump_factor
+  if not self.in_jump then
+    jump_factor = 1
+  end
+
+  self.x = self.x + x * jump_factor
+  self.y = self.y + y * jump_factor
 end
 
 function RC_Player:jump()
-  self.move_action = 'jump'
+  if not self.in_jump then
+    self.move_action = 'jump'
+    self.jump_action = 'up'
+    self.in_jump = true
+    self.jump_start_y = self.y
+  end
 end
 
+function RC_Player:update_jump(dt)
+  if self.in_jump then
+    if self.jump_action == 'up' then
+      self.y = self.y - 70*dt;
+    elseif self.jump_action == 'down' then
+      self.y = self.y + 140*dt;
+    end
+
+    if self.y <= self.jump_start_y - 30 then
+      self.jump_action = 'down'
+    end
+    if self.jump_action == 'down' then
+      if self.y >= self.jump_start_y then
+        self.y = self.jump_start_y
+        self.in_jump = false
+      end
+    end
+  end
+end
 
 function RC_Player:update(dt)
   self.anim_walk:update(dt)
   self.anim_walk:stop()
-  self.move_action = 'stand'
+  self:update_jump(dt)
+  if not self.in_jump then
+    self.move_action = 'stand'
+  end
 end
 
-function RC_Player:draw()  
-  if self.move_action == 'walk' then    
+function RC_Player:draw()
+  if self.move_action == 'walk' and not self.in_jump then
     if self.look_direction == 'right' then
       self.anim_walk:draw(self.x, self.y)
     elseif self.look_direction == 'left' then
       self.anim_walk:draw(self.x + 82, self.y, 0, -1, 1)
     end
-  elseif self.move_action == 'jump' then
+  elseif self.in_jump then
     self:draw_based_on_look_direction(self.img_jump)
   elseif self.move_action == 'stand' then
     self:draw_based_on_look_direction(self.img_stand)
