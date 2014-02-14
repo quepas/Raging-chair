@@ -32,6 +32,7 @@ function RC_Player:move(x, y)
 end
 
 function RC_Player:jump()
+  self.move_action = 'jump'
 end
 
 
@@ -49,11 +50,16 @@ function RC_Player:draw()
       self.anim_walk:draw(self.x + 82, self.y, 0, -1, 1)
     end
   elseif self.move_action == 'jump' then
-  else
-    if self.look_direction == 'right' then
-      love.graphics.draw(self.img_stand, self.x, self.y)
-    elseif self.look_direction == 'left' then
-      love.graphics.draw(self.img_stand, self.x + 82, self.y, 0, -1, 1)
-    end
+    self:draw_based_on_look_direction(self.img_jump)
+  elseif self.move_action == 'stand' then
+    self:draw_based_on_look_direction(self.img_stand)
+  end
+end
+
+function RC_Player:draw_based_on_look_direction(img)
+  if self.look_direction == 'right' then
+    love.graphics.draw(img, self.x, self.y)
+  elseif self.look_direction == 'left' then
+    love.graphics.draw(img, self.x + 82, self.y, 0, -1, 1)
   end
 end

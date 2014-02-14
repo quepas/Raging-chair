@@ -9,20 +9,20 @@ end
 function love.update(dt)
   player:update(dt)
 
-  if love.keyboard.isDown('space') then
+  if love.keyboard.isDown(' ') then
     player:jump()
-  end
+  else
+    if love.keyboard.isDown('left') then
+      player:move(-50*dt, 0)
+    elseif love.keyboard.isDown('right') then
+      player:move(50*dt, 0)
+    end
 
-  if love.keyboard.isDown('left') then
-    player:move(-50*dt, 0)
-  elseif love.keyboard.isDown('right') then
-    player:move(50*dt, 0)
-  end
-
-  if love.keyboard.isDown('up') then
-    player:move(0, -50*dt)
-  elseif love.keyboard.isDown('down') then
-    player:move(0, 50*dt)
+    if love.keyboard.isDown('up') then
+      player:move(0, -50*dt)
+    elseif love.keyboard.isDown('down') then
+      player:move(0, 50*dt)
+    end
   end
 end
 
